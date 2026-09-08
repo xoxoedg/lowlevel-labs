@@ -1,0 +1,22 @@
+# --- build artifacts ---
+# object files & raw/linked binaries
+*.o
+*.obj
+*.a
+*.so
+*.bin
+*.elf
+*.out
+
+# linked ELF executables (no extension) — pflegen pro lab
+01-stack-overflow-basics/vuln
+04-x86-asm-basics/hello
+
+# common build dirs
+build/
+bin/
+
+# exploit dev scratch
+payload*
+core
+*.core
