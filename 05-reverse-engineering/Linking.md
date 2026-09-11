@@ -1,4 +1,4 @@
-# Reverse Engineering / Binary Analysis
+# Linking Basics
 
 ## File types:
 
@@ -57,8 +57,6 @@ int my_strlen(char *str);
 #endif
 ```
 
-- Include guard (`#ifndef`/`#define`/`#endif`) prevents duplicate declarations if the header gets included multiple times (directly or indirectly) across a project
-
 #### mystrings.c
 
 ```c
@@ -116,11 +114,14 @@ gcc mystrings.o -shared -o libmystrings.so
 ```bash
 gcc -o main main.c -L. -lmystrings
 
-# -L. tells the linker to look the current directory for the shared libary
+# -L. tells the linker to look at the current directory for the shared libary
 ```
 
 4) Add the current directory to the path were the loader ld.so searches for the shared libary: 
-`LD_LIBRARY_PATH=. `
+
+```
+export LD_LIBRARY_PATH=. 
+```
 
 5) Run the binary:
 
