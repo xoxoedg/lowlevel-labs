@@ -20,3 +20,11 @@ bin/
 payload*
 core
 *.core
+
+# Ausnahme: Artefakte für 02-exercise_2 sollen mitcommitet werden
+!05-reverse-engineering/02-exercise_2/bin/
+!05-reverse-engineering/02-exercise_2/bin/**
+!05-reverse-engineering/02-exercise_2/build/
+!05-reverse-engineering/02-exercise_2/build/**
+!05-reverse-engineering/02-exercise_2/lib/
+!05-reverse-engineering/02-exercise_2/lib/**
