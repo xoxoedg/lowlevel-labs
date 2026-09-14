@@ -65,34 +65,37 @@ Disassembly of section .text:
     1052:       8b 15 a8 2f 00 00       mov    edx,DWORD PTR [rip+0x2fa8]        # 4000 <my_var1>
     1058:       8b 45 ec                mov    eax,DWORD PTR [rbp-0x14] -> Lade my_var2 in eax
     105b:       8d 1c 02                lea    ebx,[rdx+rax*1]          -> ebx=my_var1 + my_var2 
-    105e:       8b 45 e8                mov    eax,DWORD PTR [rbp-0x18]
-    1061:       89 c7                   mov    edi,eax
-    1063:       e8 10 00 00 00          call   1078 <alg>
-    1068:       01 d8                   add    eax,ebx
-    106a:       89 c7                   mov    edi,eax
-    106c:       e8 af ff ff ff          call   1020 <_exit@plt>
-    1071:       90                      nop
-    1072:       48 8b 5d f8             mov    rbx,QWORD PTR [rbp-0x8]
+    105e:       8b 45 e8                mov    eax,DWORD PTR [rbp-0x18] -> move i into eax (func argument)
+    1061:       89 c7                   mov    edi,eax                  -> edi (erstes funktionsargument) 
+    1063:       e8 10 00 00 00          call   1078 <alg>               -> Funktionscalll
+    1068:       01 d8                   add    eax,ebx                  -> eax=1, ebx=my_var1 + my_var2 
+    106a:       89 c7                   mov    edi,eax                  -> edi (erstes funktionsargument)
+    106c:       e8 af ff ff ff          call   1020 <_exit@plt>         -> jump zur exit funktion 
+    1071:       90                      nop                             -> no operation
+    1072:       48 8b 5d f8             mov    rbx,QWORD PTR [rbp-0x8]  -> Stelle rbx wieder her  (1038)
+                                        //Epilog 
     1076:       c9                      leave
     1077:       c3                      ret
 
 0000000000001078 <alg>:
     1078:       f3 0f 1e fa             endbr64
+                                        //Prolog
     107c:       55                      push   rbp
     107d:       48 89 e5                mov    rbp,rsp
     1080:       48 83 ec 10             sub    rsp,0x10
-    1084:       89 7d fc                mov    DWORD PTR [rbp-0x4],edi
-    1087:       83 7d fc 01             cmp    DWORD PTR [rbp-0x4],0x1
-    108b:       7f 07                   jg     1094 <alg+0x1c>
-    108d:       b8 01 00 00 00          mov    eax,0x1
-    1092:       eb 11                   jmp    10a5 <alg+0x2d>
+    1084:       89 7d fc                mov    DWORD PTR [rbp-0x4],edi -> Schreibe 4 Bytes i=0 in ram
+    1087:       83 7d fc 01             cmp    DWORD PTR [rbp-0x4],0x1 ->  Vergleiche 0 mit 1
+    108b:       7f 07                   jg     1094 <alg+0x1c>         -> 0<1 kein jump
+    108d:       b8 01 00 00 00          mov    eax,0x1                 -> 1 ins return register     
+    1092:       eb 11                   jmp    10a5 <alg+0x2d>         -> Jump zum Epilog
     1094:       8b 45 fc                mov    eax,DWORD PTR [rbp-0x4]
     1097:       83 e8 01                sub    eax,0x1
     109a:       89 c7                   mov    edi,eax
     109c:       e8 d7 ff ff ff          call   1078 <alg>
     10a1:       0f af 45 fc             imul   eax,DWORD PTR [rbp-0x4]
-    10a5:       c9                      leave
-    10a6:       c3                      ret
+                                        //Epilog
+    10a5:       c9                      leave                          -> leave = move rsp rbp; pop rbp 
+    10a6:       c3                      ret                            -> pop rip
 ```
 
 ## Data Section
