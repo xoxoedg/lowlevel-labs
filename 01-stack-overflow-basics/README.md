@@ -1,4 +1,4 @@
-# 01 – Stack Overflow Basics
+# 01 - Stack Overflow Basics
 
 Ein klassischer Stack Buffer Overflow auf x86-64 Linux, bewusst ohne moderne
 Schutzmechanismen kompiliert, um das Grundprinzip von Grund auf zu verstehen.
@@ -7,7 +7,7 @@ Schutzmechanismen kompiliert, um das Grundprinzip von Grund auf zu verstehen.
 
 `vulnerable()` kopiert Nutzereingabe mit `strcpy()` in einen 64-Byte
 Stack-Buffer, ohne die Länge zu prüfen. Ziel: die Return-Adresse der Funktion so
-überschreiben, dass das Programm zur Funktion `secret()` springt – einer
+überschreiben, dass das Programm zur Funktion `secret()` springt, einer
 Funktion, die im normalen Programmablauf nie aufgerufen wird.
 
 ## Das verwundbare Programm
@@ -54,7 +54,7 @@ rbp - 64  →  buffer[64]          (64 Byte, Start)
 ```
 
 `buffer` liegt also 64 Byte unterhalb von RBP, direkt gefolgt von Saved RBP
-(8 Byte) und der Return-Adresse (8 Byte) – macht **72 Byte Padding**, bevor man
+(8 Byte) und der Return-Adresse (8 Byte), macht **72 Byte Padding**, bevor man
 die Return-Adresse erreicht.
 
 ## Vorgehen
@@ -81,7 +81,7 @@ print (char*)$rbp + 8 - (char*)&buffer
 ```
 
 Zusätzlich im Stack-Dump (`x/30xg $rsp`) nachvollzogen: die Kette aus
-`0x4141414141414141` (= `'A'`-Bytes) bricht exakt bei Offset 72 ab – der Punkt,
+`0x4141414141414141` (= `'A'`-Bytes) bricht exakt bei Offset 72 ab, dem Punkt,
 an dem die (jetzt überschriebene) Return-Adresse beginnt.
 
 ### 3. Payload bauen
@@ -90,8 +90,8 @@ an dem die (jetzt überschriebene) Return-Adresse beginnt.
 python3 -c "import struct, sys; sys.stdout.buffer.write(b'A'*72 + struct.pack('<Q', 0x401196))" > payload.bin
 ```
 
-- `b'A'*72` – Padding (64 Byte Buffer + 8 Byte Saved RBP)
-- `struct.pack('<Q', 0x401196)` – die Zieladresse als 8-Byte-Wert in
+- `b'A'*72`: Padding (64 Byte Buffer + 8 Byte Saved RBP)
+- `struct.pack('<Q', 0x401196)`: die Zieladresse als 8-Byte-Wert in
   Little-Endian-Reihenfolge (x86-64-Standard)
 
 ### 4. Exploit ausführen
@@ -101,7 +101,7 @@ gdb ./vuln
 (gdb) run "$(cat payload.bin)"
 ```
 
-Ergebnis: Statt zu `main()` zurückzukehren, springt das Programm zu `secret()` –
+Ergebnis: Statt zu `main()` zurückzukehren, springt das Programm zu `secret()`,
 der Kontrollfluss wurde erfolgreich über den Stack gekapert.
 
 ```
@@ -113,12 +113,12 @@ secret () at vuln.c:4
 
 ## Tools
 
-- **gcc** – Kompilieren mit gezielt deaktivierten Schutzmechanismen
-- **objdump** – statische Analyse, Funktionsadressen finden
-- **gdb** – dynamische Analyse, Stack-Inhalt zur Laufzeit verifizieren
-- **python3 / struct** – binären Payload mit korrekter Byte-Reihenfolge bauen
+- **gcc**: Kompilieren mit gezielt deaktivierten Schutzmechanismen
+- **objdump**: statische Analyse, Funktionsadressen finden
+- **gdb**: dynamische Analyse, Stack-Inhalt zur Laufzeit verifizieren
+- **python3 / struct**: binären Payload mit korrekter Byte-Reihenfolge bauen
 
 ## Nächste Schritte
 
-Siehe `02-canary-bypass/` – dasselbe Grundprinzip, diesmal gegen einen
+Siehe `02-canary-bypass/`, dasselbe Grundprinzip, diesmal gegen einen
 aktivierten Stack Canary, inklusive Info-Leak über einen Format-String-Bug.

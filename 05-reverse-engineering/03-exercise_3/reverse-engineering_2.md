@@ -1,11 +1,11 @@
 # Reverse Engineering 2
 
-## Exercise 1 — Calling Conventions
+## Exercise 1: Calling Conventions
 
-Diesmal wechselt **nur `alg`** auf die Microsoft x64 ABI — `my_entry` bleibt bei der
+Diesmal wechselt **nur `alg`** auf die Microsoft x64 ABI, `my_entry` bleibt bei der
 System V AMD64 ABI (Standard unter Linux). Damit das funktioniert, müssen Caller
 (`my_entry`, ruft `alg` auf) und Callee (`alg` selbst) sich einig sein, welche Convention
-für den Aufruf von `alg` gilt — deshalb wird `alg` sowohl in der Deklaration
+für den Aufruf von `alg` gilt, deshalb wird `alg` sowohl in der Deklaration
 (`myprog.c`) als auch in der Definition (`mylib.c`) mit `__attribute__((ms_abi))`
 markiert. `my_entry` selbst behält ihre normale (System-V-)Signatur, da sie ja nur von
 außen (dem Loader über `-e my_entry`) aufgerufen wird und nicht `alg`-intern ist.
@@ -114,18 +114,18 @@ Disassembly of section .text:
 ## Beobachtungen
 
 - **`my_entry` selbst sieht fast aus wie die reine SysV-Version** (`push rbx`, `sub rsp,0x18`,
-  keine XMM-Saves) — der einzige Unterschied ist der `sub rsp,0x20` / `add rsp,0x20`
+  keine XMM-Saves), der einzige Unterschied ist der `sub rsp,0x20` / `add rsp,0x20`
   rund um den `call alg`, sowie `mov ecx,eax` statt `mov edi,eax`.
 - **Shadow Space wird nur um den `alg`-Aufruf herum reserviert** (`1061`/`106c`), nicht
-  für den ganzen Funktionskörper — im Gegensatz zu einer Funktion, die selbst komplett
+  für den ganzen Funktionskörper, im Gegensatz zu einer Funktion, die selbst komplett
   in ms_abi kompiliert ist (dort steht `sub rsp` einmalig im Prolog).
 - **Kein XMM6-15 Save/Restore in `my_entry`**, weil `my_entry` selbst nicht `ms_abi` ist
-  und daher nicht die (viel größeren) callee-saved-Pflichten der Microsoft ABI hat —
-  diese gelten nur für `alg`, das aber hier keine XMM-Register benutzt.
+  und daher nicht die (viel größeren) callee-saved-Pflichten der Microsoft ABI hat.
+  Diese gelten nur für `alg`, das aber hier keine XMM-Register benutzt.
 - **`alg` selbst** sieht identisch aus wie im Fall, in dem beide Funktionen ms_abi waren:
   Argument in `ecx`, `sub rsp,0x20` als eigener Shadow-Space-Puffer.
 - **`_exit`** bleibt unverändert System V (`edi`), da es aus der libc kommt und nicht
-  angepasst wurde — im selben Binary sind also drei verschiedene Aufruf-Konventionen
+  angepasst wurde. Im selben Binary sind also drei verschiedene Aufruf-Konventionen
   gleichzeitig aktiv: SysV für `my_entry`/`_exit`, ms_abi für `alg`.
 
 ## Data Section

@@ -2,10 +2,10 @@
 
 ## File types:
 
-### .a — Static Archive (static linking)
+### .a: Static Archive (static linking)
 
 - static archive (can hold multiple `.o` files)
-- used for static linking — code gets copied into the final executable at link time
+- used for static linking, code gets copied into the final executable at link time
 - symbol index (built via `ar -s`) lets the linker find symbols without scanning every `.o`
 
 ```bash
@@ -18,32 +18,32 @@ $ ar -rcs libmylib.a mylib.o
 
 ### .o - Object Files
 
-- compiled, but not yet linked — output of `gcc -c`
+- compiled, but not yet linked (output of `gcc -c`)
 - contains machine code + a symbol table + relocations (placeholders for addresses not yet known)
 - external symbols show up as `*UND*` (undefined) until linking resolves them
-- final addresses aren't set yet — get filled in once linked into a `.a`, `.so`, or executable (elf/pe)
+- final addresses aren't set yet, they get filled in once linked into a `.a`, `.so`, or executable (elf/pe)
 
 
-### .so — Shared Object (dynamic linking)
+### .so: Shared Object (dynamic linking)
 
 - ELF equivalent of Windows' `.dll`
-- code stays **external** — not copied into the executable, only referenced
+- code stays **external**, not copied into the executable, only referenced
 - loaded into memory at runtime, shared across multiple programs that use it
-- requires `-fPIC` when compiling the `.o` files that go into it — code must work at *any* load address, since the `.so` can be mapped differently depending on the loading program / ASLR
+- requires `-fPIC` when compiling the `.o` files that go into it, since code must work at *any* load address (the `.so` can be mapped differently depending on the loading program / ASLR)
 - built with `gcc mylib.o -shared -o libmylib.so`
-- runtime resolution happens via **GOT + PLT** (lazy binding) — see [[#GOT--PLT]]
+- runtime resolution happens via **GOT + PLT** (lazy binding), see [[#GOT--PLT]]
 
 
 
-## Custom Practice Exercise — Building Your Own .so
+## Custom Practice Exercise: Building Your Own .so
 
 Goal: build custom string functions as a shared library and dynamically link them against a main program.
 
 ### Files
 
-- `mystrings.h` — header with function **declarations** (no implementation)
-- `mystrings.c` — the actual **definitions** (function bodies)
-- `main.c` — uses the functions via the header
+- `mystrings.h`: header with function **declarations** (no implementation)
+- `mystrings.c`: the actual **definitions** (function bodies)
+- `main.c`: uses the functions via the header
 
 #### mystrings.h
 
