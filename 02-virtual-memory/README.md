@@ -78,8 +78,8 @@ Page faults and timing in a separate run (press Enter twice):
 
 ||Breakpoint 1|Breakpoint 2|
 |---|---|---|
-|VmSize|1,051,268 kB|TODO: measure|
-|VmRSS|1,050,248|TODO: measure|
+|VmSize|1,051,268 kB| 1,051,268 kB|
+|VmRSS|1,672 kB|1,050,248 kB|
 
 From `/usr/bin/time -v`:
 
